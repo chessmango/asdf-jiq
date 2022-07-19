@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-GH_REPO="https://github.com/jckuester/awsls"
-TOOL_NAME="awsls"
-TOOL_TEST="awsls --version"
+GH_REPO="https://github.com/fiatjaf/jiq"
+TOOL_NAME="jiq"
+TOOL_TEST="jiq --version"
 
 fail() {
   echo -e "asdf-$TOOL_NAME: $*"
@@ -13,7 +13,7 @@ fail() {
 
 curl_opts=(-fsSL)
 
-# NOTE: You might want to remove this if awsls is not hosted on GitHub releases.
+# NOTE: You might want to remove this if jiq is not hosted on GitHub releases.
 if [ -n "${GITHUB_API_TOKEN:-}" ]; then
   curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
 fi
@@ -38,7 +38,7 @@ download_release() {
   version="$1"
   filename="$2"
 
-  url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}_${version}_$(get_platform)_$(get_arch).tar.gz"
+  url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}_$(get_platform)_$(get_arch)"
 
   echo "* Downloading $TOOL_NAME release $version..."
   curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -80,11 +80,11 @@ get_arch() {
   "x86_64")
     echo "amd64"
     ;;
-  "arm")
-    echo "armv7" # Super best effort - TODO: find useful way to split armv6/armv7 maybe
+  "i386" | "i686")
+    echo "386"
     ;;
   "aarch64" | "arm64")
-    echo "arm64"
+    echo "arm"
     ;;
   *)
     exit 1
